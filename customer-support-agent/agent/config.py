@@ -39,7 +39,9 @@ def _bool(name: str, default: str) -> bool:
 
 @dataclass(frozen=True)
 class Config:
-    products_mcp_url: str
+    # Unset until the products MCP server is bound: Agent Manager adds it, and deploys the agent
+    # again, once the server is attached. The agent starts without it and says it isn't connected.
+    products_mcp_url: str | None
     # Sent as X-API-Key to the MCP gateway.
     mcp_api_key: str
     use_llm_provider: bool
@@ -57,7 +59,9 @@ class Config:
         if not max_tokens.isdigit() or int(max_tokens) < 1:
             raise RuntimeError("MAX_TOKENS must be a positive whole number")
         return cls(
-            products_mcp_url=_validate_url("PRODUCTS_MCP_URL", _env("PRODUCTS_MCP_URL")),
+            products_mcp_url=_validate_url("PRODUCTS_MCP_URL", url)
+            if (url := os.environ.get("PRODUCTS_MCP_URL"))
+            else None,
             mcp_api_key=_env("MCP_API_KEY", ""),
             use_llm_provider=use_provider,
             # Injected by Agent Manager when an Anthropic LLM provider is bound to the agent.

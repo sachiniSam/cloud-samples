@@ -96,7 +96,7 @@ Serves `POST /chat` on port `8000` (`{"message", "session_id"}` in, `{"response"
 
 | Env var | Required | Purpose |
 |---|---|---|
-| `PRODUCTS_MCP_URL` | Yes | The MCP gateway URL plus `/mcp` |
+| `PRODUCTS_MCP_URL` | Yes, to answer product questions | The MCP gateway URL plus `/mcp`. Without it the agent still starts, and answers that the product catalog isn't connected yet. |
 | `MCP_API_KEY` | When the MCP gateway checks keys | Sent as `X-API-Key`. Store it as a secret |
 | `LLM_PROVIDER_URL`, `LLM_PROVIDER_KEY` | When `USE_LLM_PROVIDER=true` | Injected by Agent Management from the bound Anthropic provider |
 | `USE_LLM_PROVIDER` | No, default `true` | `false` for a local run straight against Anthropic |

@@ -24,6 +24,8 @@ logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("customer-support-agent")
 
 CONFIG = Config.from_env()
+if not CONFIG.products_mcp_url:
+    log.info("PRODUCTS_MCP_URL is not set yet: chats answer that the product catalog isn't connected until it is")
 
 # Demo-grade memory: keyed on the caller-supplied session_id and lost on restart.
 MAX_SESSIONS = 500
@@ -126,6 +128,10 @@ def chat(req: ChatRequest) -> ChatResponse:
         raise HTTPException(status_code=400, detail="message must not be empty")
 
     session_id = req.session_id or str(uuid.uuid4())
+
+    # Not bound to the products MCP server yet: nothing failed, so nothing is logged as an error.
+    if not CONFIG.products_mcp_url:
+        raise HTTPException(status_code=503, detail="product catalog not connected yet")
 
     try:
         agent = _agent_for(session_id)
